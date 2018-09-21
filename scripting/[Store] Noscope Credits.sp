@@ -12,14 +12,14 @@ ConVar NS_NoscopeWeapon,
 
 char g_sTag[32], weapon[16];
 	
-int g_NoscopeWeapon, g_AmountNoscope;
+int g_NoscopeWeapon, NewNoscopeWeapon, g_AmountNoscope;
 
 public Plugin myinfo = 
 {
 	name				= 	"[Store] NoScope Credits",
 	author			= 	"Cruze",
 	description		= 	"Credits for noscope",
-	version			= 	"1.0",
+	version			= 	"1.1",
 	url				= 	""
 }
 
@@ -34,16 +34,21 @@ public void OnPluginStart()
 	
 	AutoExecConfig(true, "cruze_creditsfornoscope");
 	
+	HookEvent("player_death", OnPlayerDeath);
+}
+
+public OnConfigsExecuted()
+{
+	gc_sTag = FindConVar("sm_store_chat_tag");
+	gc_sTag.GetString(g_sTag, sizeof(g_sTag));
+	
 	g_NoscopeWeapon		= GetConVarInt(NS_NoscopeWeapon);
 	g_AmountNoscope		= GetConVarInt(NS_AmountNoscope);
 	
-	HookEvent("player_death", OnPlayerDeath);
-}
-public void OnAllPluginsLoaded()
-{
 	HookConVarChange(NS_AmountNoscope, OnSettingChanged);
 	HookConVarChange(NS_NoscopeWeapon, OnSettingChanged);
 }
+
 public int OnSettingChanged(Handle convar, const char[] oldValue, const char[] newValue)
 {
 	if(convar == NS_NoscopeWeapon)
@@ -56,12 +61,6 @@ public int OnSettingChanged(Handle convar, const char[] oldValue, const char[] n
 	}
 }
 
-public OnConfigsExecuted()
-{
-	gc_sTag = FindConVar("sm_store_chat_tag");
-	gc_sTag.GetString(g_sTag, sizeof(g_sTag));
-}
-
 public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(GetEventInt(event, "userid"));
@@ -70,22 +69,22 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	if (victim == attacker)
 		return;
 	
+	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	
 	if(g_NoscopeWeapon == 1)
 	{
-		g_NoscopeWeapon = (StrContains(weapon, "awp") != -1);
+		NewNoscopeWeapon = StrContains(weapon, "awp") != -1;
 	}
 	else if(g_NoscopeWeapon == 2)
 	{
-		g_NoscopeWeapon =  (StrContains(weapon, "ssg08") != -1 || StrContains(weapon, "scout") != -1);
+		NewNoscopeWeapon =  StrContains(weapon, "ssg08") != -1 || StrContains(weapon, "scout") != -1;
 	}
 	else//if(g_NoscopeWeapon == 3)
 	{
-		g_NoscopeWeapon = (StrContains(weapon, "awp") != -1 || StrContains(weapon, "ssg08") != -1 || StrContains(weapon, "scout") != -1);
+		NewNoscopeWeapon = StrContains(weapon, "awp") != -1 || StrContains(weapon, "ssg08") != -1 || StrContains(weapon, "scout") != -1;
 	}
-
-	GetEventString(event, "weapon", weapon, sizeof(weapon));
 	
-	if(g_NoscopeWeapon && !GetEntProp(attacker, Prop_Send, "m_bIsScoped"))
+	if((NewNoscopeWeapon) && !GetEntProp(attacker, Prop_Send, "m_bIsScoped"))
 	{
 		if(IsValidClient(attacker) && g_AmountNoscope > 1)
 		{
