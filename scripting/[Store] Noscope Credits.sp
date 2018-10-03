@@ -19,7 +19,7 @@ public Plugin myinfo =
 	name				= 	"[Store] NoScope Credits",
 	author			= 	"Cruze",
 	description		= 	"Credits for noscope",
-	version			= 	"1.1",
+	version			= 	"1.11",
 	url				= 	""
 }
 
@@ -67,6 +67,9 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	int attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	
 	if (victim == attacker)
+		return;
+
+	if(GetClientTeam(victim) == GetClientTeam(attacker))
 		return;
 	
 	GetEventString(event, "weapon", weapon, sizeof(weapon));
