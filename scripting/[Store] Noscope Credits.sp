@@ -10,8 +10,7 @@
 ConVar gc_bToggleChatMsg,
 		gc_iNoscopeWeapon,
 		gc_iAmountNoscopebelow15mtrs,
-		gc_iAmountNoscopeabove15mtrs,
-		gc_sTag;
+		gc_iAmountNoscopeabove15mtrs;
 		
 bool g_bToggleChatMsg;
 
@@ -24,7 +23,7 @@ public Plugin myinfo =
 	name			= 	"[Store] NoScope Credits",
 	author			= 	"Cruze",
 	description		= 	"Credits for noscope",
-	version			= 	"1.3",
+	version			= 	"1.0-kxnrl",
 	url			= 	"http://steamcommunity.com/profiles/76561198132924835"
 }
 
@@ -53,8 +52,7 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	gc_sTag = FindConVar("sm_store_chat_tag");
-	gc_sTag.GetString(g_sTag, sizeof(g_sTag));
+	strcopy(g_sTag, sizeof(g_sTag), "[{green}Store{default}]");
 	
 	g_bToggleChatMsg			= GetConVarBool(gc_bToggleChatMsg);
 	g_iNoscopeWeapon			= GetConVarInt(gc_iNoscopeWeapon);
@@ -134,7 +132,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 	{
 		if(NoscopeDistance <= 15.0 && g_iAmountNoscope15 > 1)
 		{
-			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iAmountNoscope15);
+			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iAmountNoscope15, "Noscope below 15 mtrs");
 			
 			if(g_bToggleChatMsg)
 			{
@@ -144,7 +142,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 		}
 		else if(NoscopeDistance > 15.0 && g_iAmountNoscope16 > 1)
 		{
-			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iAmountNoscope16);
+			Store_SetClientCredits(attacker, Store_GetClientCredits(attacker) + g_iAmountNoscope16, "Noscope above 15 mtrs");
 			
 			if(g_bToggleChatMsg)
 			{
@@ -164,6 +162,7 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 		}
 	}
 }
+
 	
 bool IsValidClient(client, bool bAllowBots = true, bool bAllowDead = true)
 {
