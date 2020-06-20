@@ -164,7 +164,6 @@ public void OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 		}
 	}
 }
-
 	
 bool IsValidClient(client, bool bAllowBots = true, bool bAllowDead = true)
 {
